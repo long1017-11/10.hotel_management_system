@@ -1,0 +1,185 @@
+{% extends 'hotel_app/base.html' %}
+
+{% block title %}Регистрация заезда гостя{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Регистрация заезда гостя</h1>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Информация о госте</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if calculated %}
+                <!-- Отображение результатов расчета и подтверждение -->
+                <div class="alert alert-info">
+                    <h5>Информация о бронировании</h5>
+                    <p><strong>Гость:</strong> {{ customer_name }}</p>
+                    <p><strong>Телефон:</strong> {{ customer_phone }}</p>
+                    <p><strong>Email:</strong> {{ customer_email }}</p>
+                    <p><strong>Дата заезда:</strong> {{ check_in_date|date:"d.m.Y" }}</p>
+                    <p><strong>Дата выезда:</strong> {{ check_out_date|date:"d.m.Y" }}</p>
+                    <p><strong>Номер:</strong> {{ available_room.room_number }} ({{ available_room.room_type.name }})</p>
+                    <h4><strong>Общая стоимость: {{ total_price }} руб.</strong></h4>
+                </div>
+                
+                <!-- Скрытие полей для хранения данных формы -->
+                <input type="hidden" name="customer_name" value="{{ customer_name }}">
+                <input type="hidden" name="customer_phone" value="{{ customer_phone }}">
+                <input type="hidden" name="customer_email" value="{{ customer_email }}">
+                <input type="hidden" name="check_in_date" value="{{ check_in_date }}">
+                <input type="hidden" name="check_out_date" value="{{ check_out_date }}">
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" name="confirm_check_in" class="btn btn-success">Зарегистрировать заезд</button>
+                    <a href="{% url 'check_in_guest' %}" class="btn btn-secondary">Изменить данные</a>
+                </div>
+            {% else %}
+                <!-- Отображение формы для ввода данных -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.customer_name.id_for_label }}" class="form-label">{{ form.customer_name.label }}</label>
+                        {{ form.customer_name }}
+                        {% if form.customer_name.errors %}
+                            <div class="text-danger">{{ form.customer_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.customer_phone.id_for_label }}" class="form-label">{{ form.customer_phone.label }}</label>
+                        <!-- Прямое рендеринг телефонного номера ввода, чтобы избежать возможных проблем с автоматическим рендерингом Django формы -->
+                        <input type="tel" 
+                               name="customer_phone" 
+                               class="form-control" 
+                               id="{{ form.customer_phone.id_for_label }}" 
+                               value="{{ form.customer_phone.value|default_if_none:'' }}" 
+                               inputmode="tel" 
+                               autocomplete="tel" 
+                               pattern="[0-9+\-\s\(\)]*" 
+                               placeholder="+7 (XXX) XXX-XXXX"
+                               maxlength="20">
+                        {% if form.customer_phone.errors %}
+                            <div class="text-danger">{{ form.customer_phone.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.customer_email.id_for_label }}" class="form-label">{{ form.customer_email.label }}</label>
+                    {{ form.customer_email }}
+                    {% if form.customer_email.errors %}
+                        <div class="text-danger">{{ form.customer_email.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.room_type.id_for_label }}" class="form-label">{{ form.room_type.label }}</label>
+                        {{ form.room_type }}
+                        {% if form.room_type.errors %}
+                            <div class="text-danger">{{ form.room_type.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.has_baby_bed.label }}</label>
+                        <div class="form-check">
+                            {{ form.has_baby_bed }}
+                            <label class="form-check-label" for="{{ form.has_baby_bed.id_for_label }}">
+                                Требуется детская кроватка
+                            </label>
+                        </div>
+                        {% if form.has_baby_bed.errors %}
+                            <div class="text-danger">{{ form.has_baby_bed.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.check_in_date.id_for_label }}" class="form-label">{{ form.check_in_date.label }}</label>
+                        <!-- Добавим lang="ru" атрибут для правильного отображения даты -->
+                        <input type="date" name="check_in_date" class="form-control" id="{{ form.check_in_date.id_for_label }}" value="{{ form.check_in_date.value|date:'Y-m-d' }}" lang="ru">
+                        {% if form.check_in_date.errors %}
+                            <div class="text-danger">{{ form.check_in_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.check_out_date.id_for_label }}" class="form-label">{{ form.check_out_date.label }}</label>
+                        <!-- Добавим lang="ru" атрибут для правильного отображения даты -->
+                        <input type="date" name="check_out_date" class="form-control" id="{{ form.check_out_date.id_for_label }}" value="{{ form.check_out_date.value|date:'Y-m-d' }}" lang="ru">
+                        {% if form.check_out_date.errors %}
+                            <div class="text-danger">{{ form.check_out_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" name="calculate_price" class="btn btn-primary">Рассчитать стоимость</button>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Отмена</a>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h5>Инструкции:</h5>
+    <ul>
+        <li>Заполните информацию о госте</li>
+        <li>Выберите тип номера и укажите, нужна ли детская кроватка</li>
+        <li>Укажите дату заезда и дату выезда</li>
+        <li>Нажмите кнопку "Рассчитать стоимость" для расчета общей стоимости проживания</li>
+        <li>Проверьте информацию и общую стоимость</li>
+        <li>Нажмите кнопку "Зарегистрировать заезд" для подтверждения регистрации</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Отображение индикатора загрузки
+    document.querySelector('form').addEventListener('submit', function() {
+        document.getElementById('loading').style.display = 'block';
+    });
+    
+    // Установка языка для элементов ввода даты
+    document.addEventListener('DOMContentLoaded', function() {
+        var dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(function(input) {
+            input.setAttribute('lang', 'ru');
+        });
+        
+        // Улучшение ввода телефона
+        var phoneInputs = document.querySelectorAll('input[type="tel"]');
+        phoneInputs.forEach(function(input) {
+            // Установить режим ввода
+            input.setAttribute('inputmode', 'tel');
+            
+            // Установить атрибут автозаполнения
+            input.setAttribute('autocomplete', 'tel');
+            
+            // Установить фокус на поле телефона при загрузке страницы
+            // Установить фокус только если поле не содержит ошибок
+            if (!input.classList.contains('is-invalid')) {
+                input.focus();
+            }
+        });
+    });
+</script>
+{% endblock %}

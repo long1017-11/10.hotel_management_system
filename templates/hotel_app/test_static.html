@@ -1,0 +1,50 @@
+{% extends 'hotel_app/base.html' %}
+
+{% block title %}Тест статических файлов - Система управления отелем{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Тест статических файлов</h1>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Проверка работы статических файлов</h3>
+                </div>
+                <div class="card-body">
+                    <p>Если вы видите этот текст, это означает, что система работает корректно.</p>
+                    
+                    <h4>Тест CSS:</h4>
+                    <p class="text-primary">Этот текст должен быть синим (проверка CSS)</p>
+                    
+                    <h4>Тест JavaScript:</h4>
+                    <button id="testButton" class="btn btn-primary">Нажмите для теста JavaScript</button>
+                    <p id="testResult" class="mt-2"></p>
+                    
+                    <h4>Тест изображений:</h4>
+                    <p>Если ниже отображается изображение, значит статические файлы работают корректно.</p>
+                    <div class="text-center">
+                        <img src="/static/images/test-image.png" alt="Тестовое изображение" class="img-fluid" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuKWiCAyMDB4MjAwPC90ZXh0Pjwvc3ZnPg==';">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const testButton = document.getElementById('testButton');
+    const testResult = document.getElementById('testResult');
+    
+    if (testButton) {
+        testButton.addEventListener('click', function() {
+            testResult.innerHTML = '<span class="text-success">JavaScript работает корректно!</span>';
+        });
+    }
+});
+</script>
+{% endblock %}

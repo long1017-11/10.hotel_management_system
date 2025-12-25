@@ -1,0 +1,105 @@
+{% extends 'hotel_app/base.html' %}
+
+{% block title %}Бронирования - Система управления отелем{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Список бронирований</h1>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Текущие бронирования</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Клиент</th>
+                                    <th>Телефон</th>
+                                    <th>Номер</th>
+                                    <th>Тип номера</th>
+                                    <th>Заезд</th>
+                                    <th>Выезд</th>
+                                    <th>Статус</th>
+                                    <th>Статус комнаты</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>{{ booking.customer_name }}</td>
+                                    <td>{{ booking.customer_phone }}</td>
+                                    <td>{{ booking.room.room_number }}</td>
+                                    <td>{{ booking.room.room_type.name }}</td>
+                                    <td>{{ booking.check_in_date|date:"d.m.Y" }}</td>
+                                    <td>{{ booking.check_out_date|date:"d.m.Y" }}</td>
+                                    <td>
+                                        {% if booking.status == 'pending' %}
+                                            <span class="badge bg-warning">Ожидает</span>
+                                        {% elif booking.status == 'confirmed' %}
+                                            <span class="badge bg-primary">Подтверждено</span>
+                                        {% elif booking.status == 'cancelled' %}
+                                            <span class="badge bg-danger">Отменено</span>
+                                        {% elif booking.status == 'checked_in' %}
+                                            <span class="badge bg-success">Проживает</span>
+                                        {% elif booking.status == 'checked_out' %}
+                                            <span class="badge bg-secondary">Выехал</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if booking.room.is_available %}
+                                            <span class="badge bg-success">Доступен</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Занят</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">Нет бронирований</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Информация о бронировании</h3>
+                </div>
+                <div class="card-body">
+                    <p>Для бронирования номера необходимо связаться с ресепшеном по телефону. Система позволяет отслеживать все бронирования и их статус.</p>
+                    <p>Возможные статусы бронирований:</p>
+                    <ul>
+                        <li><span class="badge bg-warning">Ожидает</span> - новое бронирование, ожидает подтверждения</li>
+                        <li><span class="badge bg-primary">Подтверждено</span> - бронирование подтверждено</li>
+                        <li><span class="badge bg-danger">Отменено</span> - бронирование отменено</li>
+                        <li><span class="badge bg-success">Проживает</span> - гость заселился</li>
+                        <li><span class="badge bg-secondary">Выехал</span> - гость выехал</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

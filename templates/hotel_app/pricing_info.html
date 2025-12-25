@@ -1,0 +1,92 @@
+{% extends 'hotel_app/base.html' %}
+
+{% block title %}Цены - Система управления отелем{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Информация о ценах</h1>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Цены по дням недели</h3>
+                </div>
+                <div class="card-body">
+                    <p>Цены на проживание различаются в зависимости от дня недели. Ниже представлена таблица цен для каждого типа номеров.</p>
+                    
+                    {% for room_type, prices in price_dict.items %}
+                    <div class="mb-4">
+                        <h4>{{ room_type }}</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>День недели</th>
+                                        <th>Цена за ночь (руб.)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for day, price in prices.items %}
+                                    <tr>
+                                        <td>{{ day }}</td>
+                                        <td>{{ price }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>Информация о ценах пока не добавлена.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Скидки при длительном бронировании</h3>
+                </div>
+                <div class="card-body">
+                    <p>При бронировании номера на длительный срок предоставляются следующие скидки:</p>
+                    <ul>
+                        <li>При бронировании от 3 до 6 ночей - скидка 5%</li>
+                        <li>При бронировании от 7 до 13 ночей - скидка 10%</li>
+                        <li>При бронировании от 14 ночей и более - скидка 15%</li>
+                    </ul>
+                    <p class="text-muted">* Скидки применяются автоматически при оформлении бронирования через ресепшен.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Информация о бронировании</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Важно:</strong> Для бронирования номера необходимо связаться с ресепшеном по телефону. 
+                        Наши сотрудники помогут вам выбрать подходящий номер и рассчитают стоимость с учетом всех скидок.
+                    </div>
+                    <p>Типы номеров в отеле:</p>
+                    <ul>
+                        <li><strong>Стандартные номера</strong> - базовый уровень комфорта</li>
+                        <li><strong>Комфортные номера</strong> - улучшенный уровень комфорта</li>
+                        <li><strong>Люксы</strong> - максимальный уровень комфорта</li>
+                    </ul>
+                    <p>Каждый тип номеров может быть одноместным, двухместным или трехместным. При необходимости во все номера можно добавить детскую кроватку.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
