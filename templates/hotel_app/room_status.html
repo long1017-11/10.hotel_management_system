@@ -1,0 +1,101 @@
+{% extends 'hotel_app/base.html' %}
+
+{% block title %}Статус номеров - Система управления отелем{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Статус номеров</h1>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Текущий статус всех номеров</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Номер комнаты</th>
+                                    <th>Тип номера</th>
+                                    <th>Категория</th>
+                                    <th>Вместимость</th>
+                                    <th>Детская кроватка</th>
+                                    <th>Статус</th>
+                                    <th>Цена за ночь</th>
+                                    <th>Текущий гость</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for info in room_status_info %}
+                                <tr>
+                                    <td>{{ info.room.room_number }}</td>
+                                    <td>{{ info.room.room_type.name }}</td>
+                                    <td>
+                                        {% if info.room.category == 'single' %}
+                                            Одноместный
+                                        {% elif info.room.category == 'double' %}
+                                            Двухместный
+                                        {% elif info.room.category == 'triple' %}
+                                            Трехместный
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ info.room.capacity }}</td>
+                                    <td>
+                                        <!-- Согласно вашему требованию, все комнаты показывают "Есть", потому что все комнаты могут быть оборудованы детской кроваткой по запросу -->
+                                        <span class="badge bg-success">Есть</span>
+                                    </td>
+                                    <td>
+                                        {% if info.room.is_available %}
+                                            <span class="badge bg-success">Доступен</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Занят</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ info.room.price_per_night }} руб.</td>
+                                    <td>
+                                        {% if info.active_bookings.exists %}
+                                            {% for booking in info.active_bookings %}
+                                                {{ booking.customer_name }}<br>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">Нет гостей</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">Нет данных о номерах</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Легенда</h3>
+                </div>
+                <div class="card-body">
+                    <p>Статусы номеров:</p>
+                    <ul>
+                        <li><span class="badge bg-success">Доступен</span> - Номер свободен и готов к заселению</li>
+                        <li><span class="badge bg-danger">Занят</span> - В номере проживает гость</li>
+                        <li><span class="badge bg-secondary">Нет</span> - Детская кроватка отсутствует</li>
+                        <li><span class="badge bg-success">Есть</span> - Детская кроватка доступна</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
